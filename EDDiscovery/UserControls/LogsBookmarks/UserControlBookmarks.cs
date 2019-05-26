@@ -453,7 +453,7 @@ namespace EDDiscovery.UserControls
         {
             OpenFileDialog dlg = new OpenFileDialog();
 
-            dlg.InitialDirectory = SQLiteConnectionUser.GetSettingString("BookmarkFormImportExcelFolder", "c:\\");
+            dlg.InitialDirectory = UserDatabase.Instance.GetSettingString("BookmarkFormImportExcelFolder", "c:\\");
 
             if (!System.IO.Directory.Exists(dlg.InitialDirectory))
                 System.IO.Directory.CreateDirectory(dlg.InitialDirectory);
@@ -542,7 +542,7 @@ namespace EDDiscovery.UserControls
                         }
                     }
 
-                    SQLiteConnectionUser.PutSettingString("BookmarkFormImportExcelFolder", System.IO.Path.GetDirectoryName(path));
+                    UserDatabase.Instance.PutSettingString("BookmarkFormImportExcelFolder", System.IO.Path.GetDirectoryName(path));
                 }
                 else
                     ExtendedControls.MessageBoxTheme.Show(FindForm(), "Failed to read " + path, "Import Failed", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
