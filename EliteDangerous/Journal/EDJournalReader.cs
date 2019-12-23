@@ -208,8 +208,11 @@ namespace EliteDangerousCore
         // function needs to report two things, list of JREs (may be empty) and UIs, and if it read something, bool.. hence form changed
         // bool reporting we have performed any sort of action is important.. it causes the TLU pos to be updated above even if we have junked all the events or delayed them
 
+        static int rjc = 0;
+
         public bool ReadJournal(out List<JournalReaderEntry> jent, out List<UIEvent> uievents, bool historyrefreshparsing, bool resetOnError )      // True if anything was processed, even if we rejected it
         {
+            System.Diagnostics.Trace.WriteLine("*** Enter Read Journal " + (rjc++));
             jent = new List<JournalReaderEntry>();
             uievents = new List<UIEvent>();
 
@@ -225,7 +228,7 @@ namespace EliteDangerousCore
 
                     if ((this.TravelLogUnit.CommanderId == null || this.TravelLogUnit.CommanderId < 0) && newentry.JournalEntry.EventTypeID != JournalTypeEnum.LoadGame)
                     {
-                        //System.Diagnostics.Debug.WriteLine("*** Delay " + newentry.JournalEntry.EventTypeStr);
+                        System.Diagnostics.Trace.WriteLine("*** Delay " + newentry.JournalEntry.EventTypeStr);
                         StartEntries.Enqueue(newentry);         // queue..
                     }
                     else
@@ -234,16 +237,18 @@ namespace EliteDangerousCore
                         {
                             var dentry = StartEntries.Dequeue();
                             dentry.JournalEntry.SetCommander(TravelLogUnit.CommanderId.Value);
-                            //System.Diagnostics.Debug.WriteLine("*** UnDelay " + dentry.JournalEntry.EventTypeStr);
+                            System.Diagnostics.Trace.WriteLine("*** UnDelay " + newentry.JournalEntry.EventTypeStr);
                             AddEntry(dentry, ref jent, ref uievents);
                         }
 
+                        System.Diagnostics.Trace.WriteLine("JR Reader Read Line " + newentry.JournalEntry.EventTypeStr);
                         //System.Diagnostics.Debug.WriteLine("*** Send  " + newentry.JournalEntry.EventTypeStr);
                         AddEntry(newentry, ref jent, ref uievents);
                     }
                 }
             }
 
+            System.Diagnostics.Trace.WriteLine("*** Leave Read Journal " + readanything + " " + (--rjc));
             return readanything;
         }
 

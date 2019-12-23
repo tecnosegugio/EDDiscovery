@@ -35,7 +35,7 @@ namespace EliteDangerousCore
 
         private Thread ScanThread;
         private ManualResetEvent StopRequested;
-        private Action<Action> InvokeAsyncOnUiThread;
+        private Action<Action> InvokeSyncOnUiThread;
         private List<JournalMonitorWatcher> watchers = new List<JournalMonitorWatcher>();
         private List<StatusMonitorWatcher> statuswatchers = new List<StatusMonitorWatcher>();
         private string frontierfolder;
@@ -43,9 +43,9 @@ namespace EliteDangerousCore
 
         const int ScanTick = 100;       // tick time to check journals and status
 
-        public EDJournalClass(Action<Action> invokeAsyncOnUiThread)
+        public EDJournalClass(Action<Action> invokeSyncOnUiThread)
         {
-            InvokeAsyncOnUiThread = invokeAsyncOnUiThread;
+            InvokeSyncOnUiThread = invokeSyncOnUiThread;
             frontierfolder = GetDefaultJournalDir();
         }
 
@@ -142,7 +142,8 @@ namespace EliteDangerousCore
 
                 if (jlu != null && ( jlu.Item1.Count != 0 || jlu.Item2.Count != 0) && !stopRequested.WaitOne(0))
                 {
-                    InvokeAsyncOnUiThread(() => ScanTickDone(jlu));
+                    System.Diagnostics.Trace.WriteLine("Ask for invoke for " + jlu.Item1.Count);
+                    InvokeSyncOnUiThread(() => ScanTickDone(jlu));
                 }
             }
         }
@@ -155,6 +156,10 @@ namespace EliteDangerousCore
             foreach (JournalMonitorWatcher mw in watchers)
             {
                 var evret = mw.ScanForNewEntries();
+
+                foreach (var x in evret.Item1)
+                    System.Diagnostics.Trace.WriteLine("Scan New Entries returned " + x.EventTypeStr);
+
                 entries.AddRange(evret.Item1);
                 uientries.AddRange(evret.Item2);
 
@@ -169,6 +174,9 @@ namespace EliteDangerousCore
 
         private void ScanTickDone(Tuple<List<JournalEntry>, List<UIEvent>> entries)       // in UI thread..
         {
+            Debug.Assert(System.Windows.Forms.Application.MessageLoop);
+
+            System.Diagnostics.Trace.WriteLine("On UI thread dispatch " + entries.Item1.Count);
             ManualResetEvent stopRequested = StopRequested;
 
             if (entries != null && stopRequested != null)
@@ -180,7 +188,7 @@ namespace EliteDangerousCore
                         if (stopRequested.WaitOne(0))
                             return;
 
-                        System.Diagnostics.Trace.WriteLine(string.Format("New entry {0} {1}", ent.EventTimeUTC, ent.EventTypeStr));
+                        System.Diagnostics.Trace.WriteLine(string.Format("Invoke on New entry {0} {1}", ent.EventTimeUTC, ent.EventTypeStr));
 
                         OnNewJournalEntry?.Invoke(ent);
                     }
@@ -309,7 +317,7 @@ namespace EliteDangerousCore
 
         public void UIEvent(ConcurrentQueue<UIEvent> events, string folder)     // callback, in Thread.. from monitor
         {
-            InvokeAsyncOnUiThread(() => UIEventPost(events));
+            InvokeSyncOnUiThread(() => UIEventPost(events));
         }
 
         public void UIEventPost(ConcurrentQueue<UIEvent> events)       // UI thread

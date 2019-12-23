@@ -108,7 +108,9 @@ namespace EliteDangerousCore
                             bufferpos += linelen;
                             try
                             {
-                                line = processor(System.Text.Encoding.UTF8.GetString(buf));
+                                string procline = System.Text.Encoding.UTF8.GetString(buf);
+                                System.Diagnostics.Trace.WriteLine("JReader line:" + procline);
+                                line = processor(procline);
                                 TravelLogUnit.Size += linelen;
                                 return true;
                             }

@@ -99,6 +99,7 @@ namespace EliteDangerousCore
 
         public Tuple<List<JournalEntry>,List<UIEvent>> ScanForNewEntries()
         {
+            System.Diagnostics.Trace.WriteLine("Scan for new Entries");
             var entries = new List<JournalEntry>();
             var uientries = new List<UIEvent>();
 
@@ -200,6 +201,8 @@ namespace EliteDangerousCore
                             foreach (JournalReaderEntry jre in ents)
                             {
                                 entries.Add(jre.JournalEntry);
+                                System.Diagnostics.Trace.WriteLine("DB in " + jre.JournalEntry.EventTypeStr);
+
                                 jre.JournalEntry.Add(jre.Json, cn.Connection, txn);
                             }
 

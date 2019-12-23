@@ -104,6 +104,7 @@ namespace EDDiscovery
         private Func<Color> GetHighlightTextColour;
         private Func<Color> GetSuccessTextColour;
         private Action<Action> InvokeAsyncOnUiThread;
+        private Action<Action> InvokeSyncOnUiThread;
         #endregion
 
 
@@ -118,12 +119,13 @@ namespace EDDiscovery
 
         #region Initialisation
 
-        public EDDiscoveryController(Func<Color> getNormalTextColor, Func<Color> getHighlightTextColor, Func<Color> getSuccessTextColor, Action<Action> invokeAsyncOnUiThread)
+        public EDDiscoveryController(Func<Color> getNormalTextColor, Func<Color> getHighlightTextColor, Func<Color> getSuccessTextColor, Action<Action> invokeAsyncOnUiThread, Action<Action> invokesyncOnUiThread)
         {
             GetNormalTextColour = getNormalTextColor;
             GetHighlightTextColour = getHighlightTextColor;
             GetSuccessTextColour = getSuccessTextColor;
             InvokeAsyncOnUiThread = invokeAsyncOnUiThread;
+            InvokeSyncOnUiThread = invokesyncOnUiThread;
             journalqueuedelaytimer = new Timer(DelayPlay, null, Timeout.Infinite, Timeout.Infinite);
         }
 
@@ -196,7 +198,7 @@ namespace EDDiscovery
             EdsmLogFetcher = new EDSMLogFetcher(LogLine);
             EdsmLogFetcher.OnDownloadedSystems += () => RefreshHistoryAsync();
 
-            journalmonitor = new EDJournalClass(InvokeAsyncOnUiThread);
+            journalmonitor = new EDJournalClass(InvokeSyncOnUiThread);
             journalmonitor.OnNewJournalEntry += NewEntry;
             journalmonitor.OnNewUIEvent += NewUIEvent;
         }
