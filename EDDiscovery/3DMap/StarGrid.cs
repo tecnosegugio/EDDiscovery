@@ -85,13 +85,13 @@ namespace EDDiscovery
             GridId.XZ(Id, out float x, out float z);
             if (array1displayed)
             {
-                SystemsDB.GetSystemVector(Id, ref array2, ref carray2, Percentage, FromIntXYZScalar, dBAsk);       // MAY return array/carray is null
+                SystemsDB.GetSystemVector(SystemsDatabase.InstanceReadOnly, Id, ref array2, ref carray2, Percentage, FromIntXYZScalar, dBAsk);       // MAY return array/carray is null
                 array2vertices = array2.Length;
 //                System.Diagnostics.Debug.WriteLine("Grid " + Id + " " + x + "," + z + " into 2  at " + Percentage + " for " + array2vertices);
             }
             else
             {
-                SystemsDB.GetSystemVector(Id, ref array1, ref carray1, Percentage, FromIntXYZScalar, dBAsk);
+                SystemsDB.GetSystemVector(SystemsDatabase.InstanceReadOnly, Id, ref array1, ref carray1, Percentage, FromIntXYZScalar, dBAsk);
                 array1vertices = array1.Length;
 //                System.Diagnostics.Debug.WriteLine("Grid " + Id + " " + x + "," + z + " into 1  at " + Percentage + " for " + array1vertices);
             }

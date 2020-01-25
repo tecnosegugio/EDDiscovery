@@ -160,6 +160,8 @@ namespace EDDiscovery
             SystemsDatabase.Instance.Start("SystemDB");
             UserDatabase.Instance.Initialize();
             SystemsDatabase.Instance.Initialize();
+            SystemsDatabase.InstanceReadOnly.Start("SystemDB");
+            SystemsDatabase.InstanceReadOnly.Initialize();
 
             Trace.WriteLine(BaseUtils.AppTicks.TickCountLap() + " Database initialization complete");
 

@@ -34,6 +34,7 @@ namespace EliteDangerousCore.DB
         }
 
         public static SystemsDatabase Instance { get; } = new SystemsDatabase();
+        public static SystemsDatabase InstanceReadOnly { get; } = new SystemsDatabase();
 
         public void Initialize()
         {

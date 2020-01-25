@@ -27,18 +27,18 @@ namespace EliteDangerousCore.DB
         // protect above from SystemsDatabase.Instance.RebuildRunning
 
         // all stars/Unpopulated/Poplulated only
-        public static void GetSystemVector<V>(int gridid, ref V[] vertices1, ref uint[] colours1, int percentage, Func<int, int, int, V> tovect, SystemAskType ask = SystemAskType.AllStars)
+        public static void GetSystemVector<V>(SystemsDatabase dbi, int gridid, ref V[] vertices1, ref uint[] colours1, int percentage, Func<int, int, int, V> tovect, SystemAskType ask = SystemAskType.AllStars)
         {
             V[] v2 = null;
             uint[] c2 = null;
-            GetSystemVector<V>(gridid, ref vertices1, ref colours1, ref v2, ref c2, percentage, tovect, ask);
+            GetSystemVector<V>(dbi, gridid, ref vertices1, ref colours1, ref v2, ref c2, percentage, tovect, ask);
         }
 
         // full interface. 
         // ask = AllStars/UnpopulatedStars/PopulatedStars = only v1/c1 is returned..
         // ask = SplitPopulatedStars = vertices1 is populated, 2 is unpopulated stars
 
-        private static void GetSystemVector<V>(int gridid, ref V[] vertices1, ref uint[] colours1,
+        private static void GetSystemVector<V>(SystemsDatabase dbi, int gridid, ref V[] vertices1, ref uint[] colours1,
                                                           ref V[] vertices2, ref uint[] colours2,
                                                           int percentage, Func<int, int, int, V> tovect,
                                                           SystemAskType ask = SystemAskType.SplitPopulatedStars)
@@ -48,7 +48,7 @@ namespace EliteDangerousCore.DB
             V[] cpvertices2 = vertices2;
             uint[] cpcolours2 = colours2;
 
-            SystemsDatabase.Instance.ExecuteWithDatabase(db =>
+            dbi.ExecuteWithDatabase(db =>
             {
                 GetSystemVector<V>(gridid, ref cpvertices1, ref cpcolours1, ref cpvertices2, ref cpcolours2, percentage, tovect, db.Connection, ask);
             },warnthreshold:5000);
