@@ -10,6 +10,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <NoWin32Manifest>true</NoWin32Manifest>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\edlogo_3mo_icon.ico</ApplicationIcon>
