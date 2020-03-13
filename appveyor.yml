@@ -1,17 +1,18 @@
-version: 8.4.1.{build}
-image: Visual Studio 2017
+version: 11.3.0.{build}
+image:
+  - Visual Studio 2017
 configuration: Release
 install:
   - git submodule update --init
 before_build:
-  - nuget restore
+  - dotnet restore
 build:
   project: EDDiscovery.sln
 test_script:
-  - nunit3-console EDDiscoveryTests\bin\Release\EDDiscoveryTests.dll --result=myresults.xml;format=AppVeyor
+  - dotnet test EDDiscoveryTests\Tests.csproj
 after_build:
-  - cmd: copy EDDiscovery\bin\Release\EDDiscovery.Portable.zip EDDiscovery.Portable.zip
+  - cmd: copy EDDiscovery\bin\Release\net461\EDDiscovery.Portable.zip EDDiscovery.Portable.zip
 artifacts:
   - path: EDDiscovery.Portable.zip
 cache:
-  - packages -> **\packages.config
+  - packages -> **\*.csproj
