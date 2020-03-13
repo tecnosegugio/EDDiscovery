@@ -139,7 +139,6 @@ namespace EliteDangerousCore.DB
             }
             catch (Exception ex)
             {
-                ExtendedControls.MessageBoxTheme.Show("UpgradeUserDB error: " + ex.Message + Environment.NewLine + ex.StackTrace);
                 return false;
             }
         }
