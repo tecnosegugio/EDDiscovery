@@ -520,10 +520,10 @@ namespace EDDiscovery.UserControls
             {
                 int row = dataGridViewTravel.CurrentCell.RowIndex;
                 //System.Diagnostics.Debug.WriteLine("TG:Fire Change Sel row" + row);
-                OnTravelSelectionChanged?.Invoke(dataGridViewTravel.Rows[row].Tag as HistoryEntry, current_historylist, true);
+                OnTravelSelectionChanged?.Invoke(dataGridViewTravel.Rows[row].Tag as HistoryEntry, current_historylist);
             }
             else if (current_historylist != null && current_historylist.Count > 0)
-                OnTravelSelectionChanged?.Invoke(current_historylist.Last(), current_historylist, false);
+                OnTravelSelectionChanged?.Invoke(current_historylist.Last(), current_historylist);
         }
 
         private void comboBoxHistoryWindow_SelectedIndexChanged(object sender, EventArgs e)

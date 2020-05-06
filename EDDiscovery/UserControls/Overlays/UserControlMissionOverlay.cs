@@ -117,7 +117,7 @@ namespace EDDiscovery.UserControls
             Display(he);
         }
 
-        private void Uctg_OnTravelSelectionChanged(HistoryEntry he, HistoryList hl, bool selectedEntry)
+        private void Uctg_OnTravelSelectionChanged(HistoryEntry he, HistoryList hl)
         {
             Display(he);
         }

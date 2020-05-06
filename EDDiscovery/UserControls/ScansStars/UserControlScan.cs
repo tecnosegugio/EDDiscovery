@@ -160,7 +160,7 @@ namespace EDDiscovery.UserControls
             }
         }
 
-        private void Uctg_OnTravelSelectionChanged(HistoryEntry he, HistoryList hl, bool selectedEntry)
+        private void Uctg_OnTravelSelectionChanged(HistoryEntry he, HistoryList hl)
         {
 #if PLAYTHRU
             t.Start();    // debug, for playing all scans thru

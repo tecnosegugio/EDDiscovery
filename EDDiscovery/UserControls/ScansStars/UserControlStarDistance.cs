@@ -97,7 +97,7 @@ namespace EDDiscovery.UserControls
             KickComputation(obj.GetLast);   // copes with getlast = null
         }
 
-        private void Uctg_OnTravelSelectionChanged(HistoryEntry he, HistoryList hl, bool selectedEntry)
+        private void Uctg_OnTravelSelectionChanged(HistoryEntry he, HistoryList hl)
         {
             KickComputation(he);
         }

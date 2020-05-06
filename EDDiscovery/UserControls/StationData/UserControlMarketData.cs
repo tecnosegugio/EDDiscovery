@@ -137,8 +137,6 @@ namespace EDDiscovery.UserControls
         {
             //Stopwatch swp = new Stopwatch(); swp.Start();
 
-            System.Diagnostics.Trace.WriteLine(BaseUtils.AppTicks.TickCountLap(this,true) + " MK " + displaynumber + " Begin Display");
-
             DataGridViewColumn sortcol = dataGridViewMarketData.SortedColumn != null ? dataGridViewMarketData.SortedColumn : dataGridViewMarketData.Columns[0];
             SortOrder sortorder = dataGridViewMarketData.SortOrder;
 
@@ -256,8 +254,6 @@ namespace EDDiscovery.UserControls
                 labelLocation.Text = left.System.Name + ":" + left.WhereAmI;
                 string r = EDDiscoveryForm.EDDConfig.ConvertTimeToSelectedFromUTC(left.EventTimeUTC).ToString();
                 toolTip.SetToolTip(labelLocation, r);
-
-                System.Diagnostics.Trace.WriteLine(BaseUtils.AppTicks.TickCountLap(this) + " MK " + displaynumber + " Load Finished");
             }
 
             dataViewScrollerPanel.ResumeLayout();

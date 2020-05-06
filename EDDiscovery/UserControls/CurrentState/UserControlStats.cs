@@ -74,7 +74,6 @@ namespace EDDiscovery.UserControls
         {
             tabControlCustomStats.SelectedIndex = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingInt(DbSelectedTabSave, 0);
             userControlStatsTimeScan.EnableDisplayStarsPlanetSelector();
-            discoveryform.OnNewEntry += AddNewEntry;
             BaseUtils.Translator.Instance.Translate(this);
         }
 
@@ -88,30 +87,30 @@ namespace EDDiscovery.UserControls
         public override void LoadLayout()
         {
             uctg.OnTravelSelectionChanged += TravelGridChanged;
+            discoveryform.OnHistoryChange += Discoveryform_OnHistoryChange;
         }
 
         public override void Closing()
         {
             EliteDangerousCore.DB.UserDatabase.Instance.PutSettingInt(DbSelectedTabSave, tabControlCustomStats.SelectedIndex);
             EliteDangerousCore.DB.UserDatabase.Instance.PutSettingString(DbStatsTreeStateSave, GameStatTreeState());
-            discoveryform.OnNewEntry -= AddNewEntry;
             uctg.OnTravelSelectionChanged -= TravelGridChanged;
-        }
-
-        private void AddNewEntry(HistoryEntry he, HistoryList hl)
-        {
-            Stats(he,hl);
+            discoveryform.OnHistoryChange -= Discoveryform_OnHistoryChange;
         }
 
         public override void InitialDisplay()
         {
-            TravelGridChanged(uctg.GetCurrentHistoryEntry,discoveryform.history);
+            Stats(uctg.GetCurrentHistoryEntry,discoveryform.history);
         }
 
-        private void TravelGridChanged(HistoryEntry he, HistoryList hl) =>
-            TravelGridChanged(he, hl, true);
+        private void Discoveryform_OnHistoryChange(HistoryList obj)
+        {
+            last_he = null;
+            last_hl = null;
+            Stats(null, obj);
+        }
 
-        public void TravelGridChanged(HistoryEntry he, HistoryList hl, bool selectedEntry)
+        private void TravelGridChanged(HistoryEntry he, HistoryList hl)
         {
             Stats(he, hl);
         }
@@ -129,35 +128,46 @@ namespace EDDiscovery.UserControls
             if (hl == null)
                 return;
 
-            last_hl = hl;
-            last_he = he;
-
             if (tabControlCustomStats.SelectedIndex == 0)
             {
-                StatsGeneral(he, hl);
+                bool fsdbetween = he == null || last_he == null || hl.IsBetween(last_he, he, x => x.IsLocOrJump);
+                if (fsdbetween)
+                {
+                    StatsGeneral(he, hl);
+                    System.Diagnostics.Debug.WriteLine("Stats general Update due to init/jump");
+                }
+
             }
-            if (tabControlCustomStats.SelectedIndex == 1)
+            else if (tabControlCustomStats.SelectedIndex == 1)
             {
                 StatsTravel(he, hl);
             }
-            if (tabControlCustomStats.SelectedIndex == 2)
+            else if (tabControlCustomStats.SelectedIndex == 2)
             {
                 StatsScan(he, hl);
             }
-            if (tabControlCustomStats.SelectedIndex == 3)
+            else if (tabControlCustomStats.SelectedIndex == 3)
             {
-                StatsGame(he, hl);
+                bool statsbetween = he == null || last_he == null || hl.IsBetween(last_he, he, x => x.journalEntry.EventTypeID == JournalTypeEnum.Statistics);
+                if (statsbetween)
+                {
+                    StatsGame(he, hl);
+                    System.Diagnostics.Debug.WriteLine("Stats general Update due to stats");
+                }
             }
-            if (tabControlCustomStats.SelectedIndex == 4)
+            else if (tabControlCustomStats.SelectedIndex == 4)
             {
                 StatsByShip(he, hl);
             }
+
+            last_hl = hl;
+            last_he = he;
         }
 
         #endregion
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        #region Stats General
+        #region Stats General - only changed on FSD jump
 
         private void StatsGeneral(HistoryEntry he, HistoryList hl)
         {

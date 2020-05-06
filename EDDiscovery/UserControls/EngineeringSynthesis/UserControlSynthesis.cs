@@ -185,7 +185,7 @@ namespace EDDiscovery.UserControls
             }
         }
 
-        private void UCTGChanged(HistoryEntry he, HistoryList hl, bool selectedEntry)
+        private void UCTGChanged(HistoryEntry he, HistoryList hl)
         {
             if (isHistoric || last_he == null)
             {

@@ -336,6 +336,28 @@ namespace EliteDangerousCore
             return (from s in historylist where s.IsFSDJump && s.EventTimeUTC >= tme select s).Count();
         }
 
+        public bool IsBetween(HistoryEntry first, HistoryEntry last, Predicate<HistoryEntry> predicate)     // either direction
+        {
+            if ( first.Indexno < last.Indexno )
+            {
+                for (int i = first.Indexno + 1; i <= last.Indexno; i++)      // not including first, since we are there, any up and including last is FSD Jump
+                {
+                    if (predicate(historylist[i - 1]))     // i less 1 since index no starts from 1
+                        return true;
+                }
+            }
+            else
+            {
+                for (int i = first.Indexno; i > last.Indexno; i--)      // including first, but not last
+                {
+                    if (predicate(historylist[i - 1]))     // i less 1 since index no starts from 1
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         public int GetFSDJumpsUTC(DateTime startutc, DateTime toutc)
         {
             return (from s in historylist where s.IsFSDJump && s.EventTimeUTC >= startutc && s.EventTimeUTC < toutc select s).Count();

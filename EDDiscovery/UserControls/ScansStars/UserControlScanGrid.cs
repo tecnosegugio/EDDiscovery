@@ -127,7 +127,7 @@ namespace EDDiscovery.UserControls
             DrawSystem(he, he.EntryType == JournalTypeEnum.Scan);
         }
 
-        private void Display(HistoryEntry he, HistoryList hl, bool selectedEntry)
+        private void Display(HistoryEntry he, HistoryList hl)
         {
             ResetDefaults();
             DrawSystem(he, false);

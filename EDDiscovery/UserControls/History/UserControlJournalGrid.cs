@@ -564,7 +564,7 @@ namespace EDDiscovery.UserControls
             if (dataGridViewJournal.CurrentCell != null)
             {
                 int row = dataGridViewJournal.CurrentCell.RowIndex;
-                OnTravelSelectionChanged?.Invoke(dataGridViewJournal.Rows[row].Tag as HistoryEntry, current_historylist, true);
+                OnTravelSelectionChanged?.Invoke(dataGridViewJournal.Rows[row].Tag as HistoryEntry, current_historylist);
             }
         }
 

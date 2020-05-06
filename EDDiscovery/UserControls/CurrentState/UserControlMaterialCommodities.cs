@@ -145,7 +145,7 @@ namespace EDDiscovery.UserControls
             Display(mcl);
         }
 
-        private void CallBackDisplayWithCheck(HistoryEntry he, HistoryList hl, bool selectedEntry)
+        private void CallBackDisplayWithCheck(HistoryEntry he, HistoryList hl)
         {
             MaterialCommoditiesList mcl = he?.MaterialCommodity;
             if ( mcl != last_mcl )

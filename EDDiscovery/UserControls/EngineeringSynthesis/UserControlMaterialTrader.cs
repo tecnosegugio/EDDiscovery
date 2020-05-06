@@ -161,7 +161,7 @@ namespace EDDiscovery.UserControls
             InitialDisplay();
         }
 
-        private void TravelSelectionChanged(HistoryEntry he, HistoryList hl, bool selectedEntry)
+        private void TravelSelectionChanged(HistoryEntry he, HistoryList hl)
         {
             if (checkBoxCursorToTop.Checked == false)
             {

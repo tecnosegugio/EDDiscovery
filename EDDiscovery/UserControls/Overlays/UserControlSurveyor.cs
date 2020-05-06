@@ -141,7 +141,7 @@ namespace EDDiscovery.UserControls
             DrawSystem(last_sys);   // need to redraw as we use backcolour
         }
 
-        private void Uctg_OnTravelSelectionChanged(HistoryEntry he, HistoryList hl, bool selectedEntry)
+        private void Uctg_OnTravelSelectionChanged(HistoryEntry he, HistoryList hl)
         {
             if (he != null)
             {

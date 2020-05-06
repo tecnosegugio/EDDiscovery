@@ -130,10 +130,10 @@ namespace EDDiscovery.UserControls
         public override void InitialDisplay()
         {
             labelVehicle.Visible = buttonExtCoriolis.Visible = buttonExtEDShipyard.Visible = buttonExtConfigure.Visible = false;
-            Display(uctg.GetCurrentHistoryEntry, discoveryform.history , true);
+            Display(uctg.GetCurrentHistoryEntry, discoveryform.history );
         }
 
-        private void Display(HistoryEntry he, HistoryList hl, bool selectedEntry)
+        private void Display(HistoryEntry he, HistoryList hl)
         {
             if (comboBoxShips.Items.Count == 0)
                 UpdateComboBox(hl);
