@@ -131,10 +131,10 @@ aside div#StatusOther p:nth-child(odd) {
 
 #StatusBox img, #ActionBox img
 {
-    padding: 10px;
     border: 1px solid darkorange;
     border-radius: 4px;
 	margin: 2px 2px 2px 2px;
+	width: 64px;
 }
 
 #StatusBox img
