@@ -13,11 +13,12 @@
  * 
  * EDDiscovery is not affiliated with Frontier Developments plc.
  */
+
+using BaseUtils.JSON;
 using EliteDangerousCore;
 using EliteDangerousCore.DB;
 using EliteDangerousCore.EDSM;
 using EliteDangerousCore.JournalEvents;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -455,12 +456,12 @@ namespace EDDiscovery.UserControls
                 int countunknown = 0;
                 foreach (Tuple<ISystem, double> ret in syslist)
                 {
-                    string name = ret.Item1.Name;
+                    ret.Item1.Name = ret.Item1.Name.Trim();
 
-                    ISystem sc = SystemCache.FindSystem(name.Trim());
+                    ISystem sc = SystemCache.FindCachedJournalSystem(ret.Item1);
                     if (sc == null)
                     {
-                        sc = new SystemClass(name.Trim());
+                        sc = ret.Item1;
                         countunknown++;
                     }
                     systems.Add(sc.Name);
@@ -731,9 +732,9 @@ namespace EDDiscovery.UserControls
         {
             try
             {
-                JObject jo = JObject.Parse(File.ReadAllText(fileName));
+                JObject jo = JObject.ParseThrowCommaEOL(File.ReadAllText(fileName));
 
-                Name = jo["Name"].ToString();
+                Name = jo["Name"].Str();
 
                 Systems.Clear();
 
@@ -741,8 +742,8 @@ namespace EDDiscovery.UserControls
 
                 foreach (var jsys in ja)
                 {
-                    string sysname = jsys.Value<String>();
-                    if (!Systems.Contains(sysname))
+                    string sysname = jsys.StrNull();
+                    if (sysname != null && !Systems.Contains(sysname))
                         Systems.Add(sysname);
                 }
 

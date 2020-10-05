@@ -56,7 +56,6 @@ namespace EDDiscovery
 
         public EDDiscovery._3DMap.MapManager Map { get; private set; }
 
-        private bool themeok = true;
         private bool in_system_sync = false;        // between start/end sync of databases
 
         BaseUtils.GitHubRelease newRelease;
@@ -192,7 +191,7 @@ namespace EDDiscovery
             theme.LoadThemes();                                         // default themes and ones on disk loaded
 
             if (!EDDOptions.Instance.NoTheme)
-                themeok = theme.RestoreSettings();                                    // theme, remember your saved settings
+                theme.RestoreSettings();                                // theme, remember your saved settings
 
             if (EDDOptions.Instance.FontSize > 0)
                 theme.FontSize = EDDOptions.Instance.FontSize;
@@ -304,6 +303,9 @@ namespace EDDiscovery
 
             Trace.WriteLine(BaseUtils.AppTicks.TickCountLap() + " Finish ED Init");
 
+            EliteDangerousCore.DLL.EDDDLLAssemblyFinder.AssemblyFindPath = EDDOptions.Instance.DLLAppDirectory();      // any needed assemblies from here
+            AppDomain.CurrentDomain.AssemblyResolve += EliteDangerousCore.DLL.EDDDLLAssemblyFinder.AssemblyResolve;
+
             DLLManager = new EliteDangerousCore.DLL.EDDDLLManager();
             DLLCallBacks = new EDDDLLInterfaces.EDDDLLIF.EDDCallBacks();
 
@@ -343,7 +345,7 @@ namespace EDDiscovery
                 EDDConfig.Instance.EDSMEDDBDownload = ressel.Item1 != "None";
                 EDDConfig.Instance.EDSMGridIDs = ressel.Item2;
                 if (EDDConfig.Instance.EDSMEDDBDownload)
-                    Controller.AsyncPerformSync(edsmfullsync: true, eddb_edsmalias_sync:true);      // order another go.
+                    Controller.AsyncPerformSync(edsmfullsync: true, eddb_edsmalias_sync: true);      // order another go.
             }
 
             if (EDDOptions.Instance.NoWindowReposition == false)
@@ -370,7 +372,7 @@ namespace EDDiscovery
 
             screenshotconverter.OnScreenshot += (infile, outfile, imagesize, ss) => // screenshot seen
             {
-                if ( ss!= null)
+                if (ss != null)
                 {
                     ss.SetConvertedFilename(infile ?? "Deleted", outfile, imagesize.Width, imagesize.Height);       // record in SS the in/out files
                 }
@@ -410,7 +412,7 @@ namespace EDDiscovery
                 {
                     if (ExtendedControls.MessageBoxTheme.Show(this,
                                     string.Format(("The following application extension DLL have been found" + Environment.NewLine +
-                                    "Do you wish to allow it to be used?" + Environment.NewLine + Environment.NewLine + 
+                                    "Do you wish to allow it to be used?" + Environment.NewLine + Environment.NewLine +
                                     "{0} " + Environment.NewLine
                                     ).T(EDTx.EDDiscoveryForm_DLLW), dll),
                                     "Warning".T(EDTx.Warning),
@@ -441,14 +443,10 @@ namespace EDDiscovery
 
             LogLine(string.Format("Profile {0} Loaded".T(EDTx.EDDiscoveryForm_PROFL), EDDProfiles.Instance.Current.Name));
 
-
-            // Notifications
-
-            if (!themeok)
-            {
-                Controller.LogLineHighlight(("The theme stored has missing colors or other missing information" + Environment.NewLine +
-                "Correct the missing colors or other information manually using the Theme Editor in Settings").T(EDTx.EDDiscoveryForm_ThemeW));
-            }
+            if (actioncontroller.FrontierBindings.FileLoaded != null)
+                LogLine(string.Format("Loaded Bindings {0}", actioncontroller.FrontierBindings.FileLoaded));
+            else
+                LogLine("Frontier bindings did not load");
 
             Notifications.CheckForNewNotifications((notelist) =>
             {
@@ -752,18 +750,21 @@ namespace EDDiscovery
                 EliteDangerousCore.Inara.InaraSync.Refresh(LogLine, history.GetLast, EDCommander.Current);
             }
 
-            HistoryEntry lastfileh = history.GetLastHistoryEntry(x => x.EntryType == JournalTypeEnum.Fileheader);
-
-            if ( lastfileh != null )
+            if (DLLManager.Count > 0)
             {
-                for( int i = lastfileh.Indexno-1; i < history.Count; i++ )      // play thru last history entries up to last file position for the DLLs, indicating stored
-                {
-                    //System.Diagnostics.Debug.WriteLine("{0} : {1} {2}", i, history.EntryOrder[i].EventTimeUTC, history.EntryOrder[i].EventSummary);
-                    DLLManager.NewJournalEntry(EliteDangerousCore.DLL.EDDDLLCallerHE.CreateFromHistoryEntry(history.EntryOrder[i], true), true);
-                }
-            }
+                HistoryEntry lastfileh = history.GetLastHistoryEntry(x => x.EntryType == JournalTypeEnum.Fileheader);
 
-            DLLManager.Refresh(EDCommander.Current.Name, EliteDangerousCore.DLL.EDDDLLCallerHE.CreateFromHistoryEntry(history.GetLast));
+                if (lastfileh != null)
+                {
+                    for (int i = lastfileh.Indexno - 1; i < history.Count; i++)      // play thru last history entries up to last file position for the DLLs, indicating stored
+                    {
+                        //System.Diagnostics.Debug.WriteLine("{0} : {1} {2}", i, history.EntryOrder[i].EventTimeUTC, history.EntryOrder[i].EventSummary);
+                        DLLManager.NewJournalEntry(EliteDangerousCore.DLL.EDDDLLCallerHE.CreateFromHistoryEntry(history.EntryOrder[i], true), true);
+                    }
+                }
+
+                DLLManager.Refresh(EDCommander.Current.Name, EliteDangerousCore.DLL.EDDDLLCallerHE.CreateFromHistoryEntry(history.GetLast));
+            }
 
             Trace.WriteLine(BaseUtils.AppTicks.TickCountLap() + " Refresh complete finished");
         }
@@ -788,8 +789,8 @@ namespace EDDiscovery
             {
                 LogLineHighlight(string.Format("Current history entry is not last in history - possible re-entrancy.\nAlert the EDDiscovery developers using either discord or Github (see help) and attach log file {0}", BaseUtils.TraceLog.LogFileName));
                 Trace.WriteLine($"Current history entry is not last in history");
-                Trace.WriteLine($"Current entry: {he.journalEntry?.GetJson()?.ToString()}");
-                Trace.WriteLine($"Last entry: {lastent.journalEntry?.GetJson()?.ToString()}");
+                Trace.WriteLine($"Current entry: {he.journalEntry?.GetJsonString()}");
+                Trace.WriteLine($"Last entry: {lastent.journalEntry?.GetJsonString()}");
                 Trace.WriteLine($"Stack Trace:");
                 Trace.WriteLine(new StackTrace(true).ToString());
             }
@@ -833,7 +834,7 @@ namespace EDDiscovery
             BaseUtils.Variables cv = new BaseUtils.Variables();
 
             string prefix = "EventClass_";
-            cv.AddPropertiesFieldsOfClass(uievent, prefix, new Type[] { typeof(System.Drawing.Icon), typeof(System.Drawing.Image), typeof(System.Drawing.Bitmap), typeof(Newtonsoft.Json.Linq.JObject) }, 5);
+            cv.AddPropertiesFieldsOfClass(uievent, prefix, new Type[] { typeof(System.Drawing.Icon), typeof(System.Drawing.Image), typeof(System.Drawing.Bitmap), typeof(BaseUtils.JSON.JObject) }, 5);
             cv[prefix + "UIDisplayed"] = "0";
             actioncontroller.ActionRun(Actions.ActionEventEDList.onUIEvent, cv);
             actioncontroller.ActionRun(Actions.ActionEventEDList.EliteUIEvent(uievent), cv);
@@ -848,6 +849,23 @@ namespace EDDiscovery
 
                 if (errlist.HasChars())
                     LogLine("Profile reports errors in triggers:".T(EDTx.EDDiscoveryForm_PE1) + errlist);
+
+                try
+                {
+                    if (DLLManager.Count > 0)       // if worth calling..
+                    {
+                        string output = BaseUtils.JSON.JToken.FromObject(uievent)?.ToString();
+                        if (output != null)
+                            DLLManager.NewUIEvent(output);
+                        else
+                            System.Diagnostics.Debug.WriteLine("JSON convert error from object in DLL");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("Could not serialise " + uievent.EventTypeStr + " " + ex);
+                }
+
             }
         }
 
@@ -1120,10 +1138,12 @@ namespace EDDiscovery
                 if (cmdr != null)
                 {
                     FolderBrowserDialog dirdlg = new FolderBrowserDialog();
+                    dirdlg.SelectedPath = UserDatabase.Instance.GetSettingString("Folder21Import", @"c:\");
                     DialogResult dlgResult = dirdlg.ShowDialog(this);
 
                     if (dlgResult == DialogResult.OK)
                     {
+                        UserDatabase.Instance.PutSettingString("Folder21Import", dirdlg.SelectedPath);
                         string logpath = dirdlg.SelectedPath;
 
                         Controller.RefreshHistoryAsync(netlogpath: logpath, forcenetlogreload: force, currentcmdr: cmdr.Nr);

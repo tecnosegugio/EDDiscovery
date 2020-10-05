@@ -737,7 +737,7 @@ namespace EDDiscovery.UserControls
         private void dataGridViewScan_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
         {
             if (e.Column.Tag == null)     // tag null means numeric sort.
-                e.SortDataGridViewColumnDate();
+                e.SortDataGridViewColumnNumeric();
         }
 
         private void userControlStatsTimeScan_DrawModeChanged(object sender, EventArgs e)
@@ -1004,7 +1004,7 @@ namespace EDDiscovery.UserControls
                 strarr[5] = hl.GetTonnesBought(si.Key).ToString("N0");
                 strarr[6] = hl.GetTonnesSold(si.Key).ToString("N0");
                 strarr[7] = hl.GetDeathCount(si.Key).ToString();
-                StatToDGV(dataGridViewByShip, (si.Value.ShipType ?? "Unknown".T(EDTx.Unknown)) + $" ({si.Value.ID})", strarr);
+                StatToDGV(dataGridViewByShip, (si.Value.ShipType ?? "Unknown".T(EDTx.Unknown)) + $" ({si.Key})", strarr);
             }
 
             if (sortcol < dataGridViewByShip.Columns.Count)
