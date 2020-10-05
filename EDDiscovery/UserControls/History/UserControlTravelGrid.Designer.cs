@@ -81,6 +81,7 @@ namespace EDDiscovery.UserControls
             this.runSelectionThroughInaraSystemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runEntryThroughProfileSystemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runSelectionThroughIGAUDebugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.runSelectionThroughEDDNDebugNoSendToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.extCheckBoxWordWrap = new ExtendedControls.ExtCheckBox();
             this.dataViewScrollerPanel = new ExtendedControls.ExtPanelDataGridViewScroll();
@@ -302,9 +303,10 @@ namespace EDDiscovery.UserControls
             this.runActionsAcrossSelectionToolSpeechStripMenuItem,
             this.runSelectionThroughInaraSystemToolStripMenuItem,
             this.runEntryThroughProfileSystemToolStripMenuItem,
-            this.runSelectionThroughIGAUDebugToolStripMenuItem});
+            this.runSelectionThroughIGAUDebugToolStripMenuItem,
+            this.runSelectionThroughEDDNDebugNoSendToolStripMenuItem});
             this.historyContextMenu.Name = "historyContextMenu";
-            this.historyContextMenu.Size = new System.Drawing.Size(388, 466);
+            this.historyContextMenu.Size = new System.Drawing.Size(388, 488);
             this.historyContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.historyContextMenu_Opening);
             // 
             // removeSortingOfColumnsToolStripMenuItem
@@ -494,6 +496,13 @@ namespace EDDiscovery.UserControls
             this.runSelectionThroughIGAUDebugToolStripMenuItem.Text = "Run selection through IGAU (Debug)";
             this.runSelectionThroughIGAUDebugToolStripMenuItem.Click += new System.EventHandler(this.runSelectionThroughIGAUDebugToolStripMenuItem_Click);
             // 
+            // runSelectionThroughEDDNDebugNoSendToolStripMenuItem
+            // 
+            this.runSelectionThroughEDDNDebugNoSendToolStripMenuItem.Name = "runSelectionThroughEDDNDebugNoSendToolStripMenuItem";
+            this.runSelectionThroughEDDNDebugNoSendToolStripMenuItem.Size = new System.Drawing.Size(387, 22);
+            this.runSelectionThroughEDDNDebugNoSendToolStripMenuItem.Text = "Run selection through EDDN no send (Debug)";
+            this.runSelectionThroughEDDNDebugNoSendToolStripMenuItem.Click += new System.EventHandler(this.runSelectionThroughEDDNDebugNoSendToolStripMenuItem_Click);
+            // 
             // toolTip
             // 
             this.toolTip.AutoPopDelay = 30000;
@@ -538,6 +547,7 @@ namespace EDDiscovery.UserControls
             this.dataViewScrollerPanel.Controls.Add(this.dataGridViewTravel);
             this.dataViewScrollerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataViewScrollerPanel.InternalMargin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.dataViewScrollerPanel.LimitLargeChange = 2147483647;
             this.dataViewScrollerPanel.Location = new System.Drawing.Point(0, 30);
             this.dataViewScrollerPanel.Name = "dataViewScrollerPanel";
             this.dataViewScrollerPanel.Size = new System.Drawing.Size(870, 580);
@@ -655,7 +665,7 @@ namespace EDDiscovery.UserControls
             this.scanEventsOutliningOnOffToolStripMenuItem,
             this.toolStripRollUpOlderOutlines});
             this.contextMenuStripOutlines.Name = "contextMenuStripOutlines";
-            this.contextMenuStripOutlines.Size = new System.Drawing.Size(190, 70);
+            this.contextMenuStripOutlines.Size = new System.Drawing.Size(190, 92);
             // 
             // outliningOnOffToolStripMenuItem
             // 
@@ -690,7 +700,7 @@ namespace EDDiscovery.UserControls
             this.rollUpOffToolStripMenuItem.Checked = true;
             this.rollUpOffToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.rollUpOffToolStripMenuItem.Name = "rollUpOffToolStripMenuItem";
-            this.rollUpOffToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.rollUpOffToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.rollUpOffToolStripMenuItem.Text = "Off";
             // 
             // rollUpAfterFirstToolStripMenuItem
@@ -698,7 +708,7 @@ namespace EDDiscovery.UserControls
             this.rollUpAfterFirstToolStripMenuItem.Checked = true;
             this.rollUpAfterFirstToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.rollUpAfterFirstToolStripMenuItem.Name = "rollUpAfterFirstToolStripMenuItem";
-            this.rollUpAfterFirstToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.rollUpAfterFirstToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.rollUpAfterFirstToolStripMenuItem.Text = "After First";
             // 
             // rollUpAfter5ToolStripMenuItem
@@ -706,7 +716,7 @@ namespace EDDiscovery.UserControls
             this.rollUpAfter5ToolStripMenuItem.Checked = true;
             this.rollUpAfter5ToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.rollUpAfter5ToolStripMenuItem.Name = "rollUpAfter5ToolStripMenuItem";
-            this.rollUpAfter5ToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.rollUpAfter5ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.rollUpAfter5ToolStripMenuItem.Text = "After 5";
             // 
             // panelTop
@@ -803,5 +813,6 @@ namespace EDDiscovery.UserControls
         private System.Windows.Forms.FlowLayoutPanel panelTop;
         private System.Windows.Forms.ToolStripMenuItem runSelectionThroughIGAUDebugToolStripMenuItem;
         private ExtendedControls.ExtCheckBox extCheckBoxWordWrap;
+        private System.Windows.Forms.ToolStripMenuItem runSelectionThroughEDDNDebugNoSendToolStripMenuItem;
     }
 }
