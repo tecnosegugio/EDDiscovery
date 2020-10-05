@@ -488,9 +488,7 @@ namespace EDDiscovery.UserControls
             {
                 var si = last_he.ShipInformation;
 
-                Newtonsoft.Json.Linq.JObject jo = si.ToJSONLoadout();
-
-                string loadoutjournalline = jo.ToString(Newtonsoft.Json.Formatting.Indented);
+                string loadoutjournalline = si.ToJSONLoadout();
 
                 //     File.WriteAllText(@"c:\code\loadoutout.txt", loadoutjournalline);
 
@@ -1138,7 +1136,7 @@ namespace EDDiscovery.UserControls
             //  later we may resize to width if other column is not used, but not now
         }
 
-        public override Color ColorTransparency { get { return Color.Green; } }
+        public override bool SupportTransparency { get { return true; } }
         public override void SetTransparency(bool on, Color curcol)
         {
             BackColor = curcol;

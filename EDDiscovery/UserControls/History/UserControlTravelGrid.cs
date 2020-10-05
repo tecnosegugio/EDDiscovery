@@ -19,8 +19,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using EDDiscovery.Controls;
 using EliteDangerousCore.DB;
@@ -28,6 +26,7 @@ using EliteDangerousCore;
 using EliteDangerousCore.EDSM;
 using EliteDangerousCore.EDDN;
 using EDDiscovery.Forms;
+using BaseUtils.JSON;
 
 namespace EDDiscovery.UserControls
 {
@@ -123,6 +122,7 @@ namespace EDDiscovery.UserControls
             runSelectionThroughInaraSystemToolStripMenuItem.Visible = false;
             runEntryThroughProfileSystemToolStripMenuItem.Visible = false;
             runSelectionThroughIGAUDebugToolStripMenuItem.Visible = false;
+            runSelectionThroughEDDNDebugNoSendToolStripMenuItem.Visible = false;
 #endif
 
             searchtimer = new Timer() { Interval = 500 };
@@ -135,7 +135,7 @@ namespace EDDiscovery.UserControls
             discoveryform.OnNewEntry += AddNewEntry;
             discoveryform.OnNoteChanged += OnNoteChanged;
 
-            contextMenuStripOutlines.SetToolStripState(EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString(DbOutlines, ""));
+            contextMenuStripOutlines.SetToolStripState(EliteDangerousCore.DB.UserDatabase.Instance.GetSettingString(DbOutlines, "rollUpOffToolStripMenuItem;"));
             this.rollUpOffToolStripMenuItem.Click += new System.EventHandler(this.rolluplimitToolStripMenuItem_Click);
             this.rollUpAfterFirstToolStripMenuItem.Click += new System.EventHandler(this.rolluplimitToolStripMenuItem_Click);
             this.rollUpAfter5ToolStripMenuItem.Click += new System.EventHandler(this.rolluplimitToolStripMenuItem_Click);
@@ -256,7 +256,7 @@ namespace EDDiscovery.UserControls
 
             System.Diagnostics.Stopwatch swtotal = new System.Diagnostics.Stopwatch();
 
-            //int lrowno = 0;
+            int lrowno = 0;
 
             if (chunks.Count != 0)
             {
@@ -272,8 +272,9 @@ namespace EDDiscovery.UserControls
                     if (row != null)
                     {
                         //row.Cells[2].Value = (lrowno++).ToString() + " " + item.Journalid + " " + (string)row.Cells[2].Value;
-                        row.Visible = outlining?.Process(item, dataGridViewTravel.RowCount, rollupscans, rollupolder) ?? true;
+                        row.Visible = outlining?.Process(item, lrowno, rollupscans, rollupolder) ?? true;
                         rowstoadd.Add(row);
+                        lrowno++;
                     }
                 }
 
@@ -297,8 +298,9 @@ namespace EDDiscovery.UserControls
                         if (row != null)
                         {
                             //row.Cells[2].Value = (lrowno++).ToString() + " " + item.Journalid + " " + (string)row.Cells[2].Value;
-                            row.Visible = outlining?.Process(item, dataGridViewTravel.RowCount, rollupscans, rollupolder) ?? true;
+                            row.Visible = outlining?.Process(item, lrowno, rollupscans, rollupolder) ?? true;
                             rowstoadd.Add(row);
+                            lrowno++;
                         }
                     }
 
@@ -1115,17 +1117,13 @@ namespace EDDiscovery.UserControls
         private void writeEventInfoToLogDebugToolStripMenuItem_Click(object sender, EventArgs e)        //DEBUG ONLY
         {
             BaseUtils.Variables cv = new BaseUtils.Variables();
-            cv.AddPropertiesFieldsOfClass(rightclickhe.journalEntry, "", new Type[] { typeof(System.Drawing.Image), typeof(System.Drawing.Icon), typeof(System.Drawing.Bitmap), typeof(Newtonsoft.Json.Linq.JObject) }, 5);
+            cv.AddPropertiesFieldsOfClass(rightclickhe.journalEntry, "", new Type[] { typeof(System.Drawing.Image), typeof(System.Drawing.Icon), typeof(System.Drawing.Bitmap), typeof(BaseUtils.JSON.JObject) }, 5);
             discoveryform.LogLine(cv.ToString(separ: Environment.NewLine));
-            //if (rightclicksystem.ShipInformation != null)
-            //    discoveryform.LogLine(rightclicksystem.ShipInformation.ToString());
         }
-
 
         private void copyJournalEntryToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Newtonsoft.Json.Linq.JObject jo = rightclickhe.journalEntry.GetJson();
-            string json = jo?.ToString(Newtonsoft.Json.Formatting.Indented);
+            string json = rightclickhe.journalEntry.GetJsonString();
             if (json != null)
             {
                 SetClipboardText(json);
@@ -1251,9 +1249,9 @@ namespace EDDiscovery.UserControls
         {
             if (rightclickhe != null)
             {
-                List<Newtonsoft.Json.Linq.JToken> list = EliteDangerousCore.Inara.InaraSync.NewEntryList(rightclickhe);
+                List<BaseUtils.JSON.JToken> list = EliteDangerousCore.Inara.InaraSync.NewEntryList(rightclickhe);
 
-                foreach (Newtonsoft.Json.Linq.JToken j in list)
+                foreach (var j in list)
                 {
                     j["eventTimestamp"] = DateTime.UtcNow.ToStringZulu();       // mangle time to now to allow it to send.
                     if (j["eventName"].Str() == "addCommanderMission")
@@ -1266,8 +1264,7 @@ namespace EDDiscovery.UserControls
                     }
                 }
 
-                Newtonsoft.Json.Linq.JObject jo = rightclickhe.journalEntry.GetJson();
-                string json = jo?.ToString();
+                string json = rightclickhe.journalEntry.GetJsonString();
                 discoveryform.LogLine(json);
 
                 EliteDangerousCore.Inara.InaraClass inara = new EliteDangerousCore.Inara.InaraClass(EDCommander.Current);
@@ -1298,6 +1295,15 @@ namespace EDDiscovery.UserControls
             }
         }
 
+        private void runSelectionThroughEDDNDebugNoSendToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if ( rightclickhe != null )
+            {
+                EDDNSync.SendToEDDN(rightclickhe, true);
+            }
+
+        }
+
         private void runActionsAcrossSelectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string laststring = "";
@@ -1325,8 +1331,7 @@ namespace EDDiscovery.UserControls
                         BaseUtils.FunctionHandlers.SetRandom(new Random(rw.Index + 1));
                         discoveryform.ActionRunOnEntry(he, Actions.ActionEventEDList.UserRightClick(he));
 
-                        Newtonsoft.Json.Linq.JObject jo = he.journalEntry.GetJson();
-                        string json = jo?.ToString(Newtonsoft.Json.Formatting.None);
+                        string json = he.journalEntry.GetJsonString();
 
                         string s = discoveryform.ActionController.Globals["GlobalSaySaid"];
 
