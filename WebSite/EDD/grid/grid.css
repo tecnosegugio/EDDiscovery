@@ -102,4 +102,5 @@ div.page {
     margin-left: -58px;
     margin-top: 90px;
     width: auto;
+	display: none;
 }

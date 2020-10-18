@@ -25,6 +25,6 @@
 {
     transition-delay: 500ms;
     transition-duration: 2000ms;
-    visibility: visible;
+    visibility: hidden;
 }
 
