@@ -154,7 +154,6 @@ namespace EDDiscovery
             drawADiscOnStarsWithPositionToolStripMenuItem.Checked = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("Map3DDrawTravelDisc", true);
             useWhiteForDiscsInsteadOfAssignedMapColourToolStripMenuItem.Checked = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("Map3DDrawTravelWhiteDisc", true);
             showStarstoolStripMenuItem.Checked = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("Map3DAllStars", false);
-            showStationsToolStripMenuItem.Checked = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("Map3DButtonStations", false);
             toolStripButtonPerspective.Checked = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("Map3DPerspective", false);
             toolStripButtonGrid.Checked = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("Map3DCoarseGrid", true);
             toolStripButtonFineGrid.Checked = EliteDangerousCore.DB.UserDatabase.Instance.GetSettingBool("Map3DFineGrid", true);
@@ -279,7 +278,7 @@ namespace EDDiscovery
         {
             if (Is3DMapsRunning )
             {
-                List<HistoryEntry> hfsd = hl.FilterByTravel;
+                List<HistoryEntry> hfsd = hl.FilterByTravel();
 
                 if (hfsd.Count > 0)
                 {
@@ -458,7 +457,6 @@ namespace EDDiscovery
             EliteDangerousCore.DB.UserDatabase.Instance.PutSettingBool("Map3DDrawTravelWhiteDisc", useWhiteForDiscsInsteadOfAssignedMapColourToolStripMenuItem.Checked);
             EliteDangerousCore.DB.UserDatabase.Instance.PutSettingBool("Map3DAllStars", showStarstoolStripMenuItem.Checked);
             EliteDangerousCore.DB.UserDatabase.Instance.PutSettingBool("Map3DButtonColours", enableColoursToolStripMenuItem.Checked);
-            EliteDangerousCore.DB.UserDatabase.Instance.PutSettingBool("Map3DButtonStations", showStationsToolStripMenuItem.Checked);
             EliteDangerousCore.DB.UserDatabase.Instance.PutSettingBool("Map3DCoarseGrid", toolStripButtonGrid.Checked);
             EliteDangerousCore.DB.UserDatabase.Instance.PutSettingBool("Map3DFineGrid", toolStripButtonFineGrid.Checked);
             EliteDangerousCore.DB.UserDatabase.Instance.PutSettingBool("Map3DCoords", toolStripButtonCoords.Checked);
@@ -865,7 +863,7 @@ namespace EDDiscovery
 
             //long t6 = _systemtickinterval.ElapsedMilliseconds;
 
-            stargrids.DrawAll(glControl, showStarstoolStripMenuItem.Checked, showStationsToolStripMenuItem.Checked);
+            stargrids.DrawAll(glControl, showStarstoolStripMenuItem.Checked);
 
            // long t7 = _systemtickinterval.ElapsedMilliseconds;
 
@@ -1854,7 +1852,7 @@ namespace EDDiscovery
                     info += Environment.NewLine + "Distance from " + clickedGMO.name + ": " + dist.ToString("0.0");
                 }
 
-                SystemNoteClass sn = SystemNoteClass.GetNoteOnSystem(sysname, hoversystem == null ? 0 : hoversystem.EDSMID);   // may be null
+                SystemNoteClass sn = SystemNoteClass.GetNoteOnSystem(sysname);   // may be null
                 if (!string.IsNullOrWhiteSpace(sn?.Note))
                 {
                     info += Environment.NewLine + "Notes: " + sn.Note.Trim();
@@ -1999,7 +1997,7 @@ namespace EDDiscovery
             {
                 if ( vs.System.HasCoordinate)
                 { 
-                    SystemNoteClass notecs = SystemNoteClass.GetNoteOnSystem(vs.System.Name, vs.System.EDSMID);
+                    SystemNoteClass notecs = SystemNoteClass.GetNoteOnSystem(vs.System.Name);
 
                     if (notecs!=null )
                     {
@@ -2085,7 +2083,7 @@ namespace EDDiscovery
 
             StarGrid.TransFormInfo ti = new StarGrid.TransFormInfo(matrixcalc.GetResMat, _znear, glControl.Width, glControl.Height, zoom.Current);
 
-            Vector3? posofsystem = stargrids.FindOverSystem(x, y, out cursysdistz, ti, showStarstoolStripMenuItem.Checked, showStationsToolStripMenuItem.Checked);
+            Vector3? posofsystem = stargrids.FindOverSystem(x, y, out cursysdistz, ti, showStarstoolStripMenuItem.Checked);
 
             if ( posofsystem == null )
                 posofsystem = starnameslist.FindOverSystem(x, y, out cursysdistz, ti); // in case these are showing

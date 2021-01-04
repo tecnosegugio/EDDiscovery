@@ -22,6 +22,7 @@ using EliteDangerousCore.EDSM;
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -74,7 +75,7 @@ namespace EDDiscovery
 
         // During SYNC events
 
-        public event Action OnSyncStarting;                                 // UI. EDSM/EDDB sync starting
+        public event Action OnSyncStarting;                                 // UI. EDSM sync starting
         public event Action OnSyncComplete;                                 // UI. SYNC has completed
         public event Action<int, string> OnReportSyncProgress;              // UI. SYNC progress reporter
 
@@ -82,6 +83,7 @@ namespace EDDiscovery
 
         public event Action<bool> OnExpeditionsDownloaded;                  // UI, true if changed entries
         public event Action OnExplorationDownloaded;                        // UI
+        public event Action OnHelpDownloaded;                               // UI
 
         #endregion
 
@@ -260,13 +262,23 @@ namespace EDDiscovery
             ReportSyncProgress("");
 
             bool checkGithub = EDDOptions.Instance.CheckGithubFiles;
-            if (checkGithub)      // not normall in debug, due to git hub chokeing
+            if (checkGithub)      // not normal in debug, due to git hub choking
             {
-                // and Expedition data
-                DownloadExpeditions(() => PendingClose);
+                DateTime lastdownloadtime = UserDatabase.Instance.GetSettingDate("DownloadFilesLastTime", DateTime.MinValue);
 
-                // and Exploration data
-                DownloadExploration(() => PendingClose);
+                if (DateTime.UtcNow - lastdownloadtime >= new TimeSpan(24, 0, 0))       // only update once per day
+                {
+                    // Expedition data
+                    DownloadExpeditions(() => PendingClose);
+
+                    // and Exploration data
+                    DownloadExploration(() => PendingClose);
+
+                    // and Help files
+                    DownloadHelp(() => PendingClose);
+
+                    UserDatabase.Instance.PutSettingDate("DownloadFilesLastTime", DateTime.UtcNow);
+                }
             }
 
             if (!EDDOptions.Instance.NoSystemsLoad)
@@ -305,7 +317,7 @@ namespace EDDiscovery
                 DoRefreshHistory(new RefreshWorkerArgs { CurrentCommander = EDCommander.CurrentCmdrID });       // kick the background refresh worker thread into action
             }
 
-            CheckForSync();     // see if any EDSM/EDDB sync is needed - this just sets some variables up
+            CheckForSync();     // see if any EDSM sync is needed - this just sets some variables up
 
             System.Diagnostics.Debug.WriteLine("Background worker setting up refresh worker");
 
@@ -332,7 +344,7 @@ namespace EDDiscovery
 
                     if (wh == 1)
                     {
-                        if (!EDDOptions.Instance.NoSystemsLoad && EDDConfig.Instance.EDSMEDDBDownload)      // if no system off, and EDSM download on
+                        if (!EDDOptions.Instance.NoSystemsLoad && EDDConfig.Instance.EDSMDownload)      // if no system off, and EDSM download on
                             SystemsDatabase.Instance.WithReadWrite(() => DoPerformSync());
                     }
                 }
@@ -449,6 +461,27 @@ namespace EDDiscovery
                         if (!cancelRequested())
                         {
                             InvokeAsyncOnUiThread(() => { OnExplorationDownloaded?.Invoke(); });
+                        }
+                    }
+                }
+            });
+        }
+
+        public void DownloadHelp(Func<bool> cancelRequested)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                string helpdir = EDDOptions.Instance.HelpDirectory();
+
+                BaseUtils.GitHubClass github = new BaseUtils.GitHubClass(EDDiscovery.Properties.Resources.URLGithubDataDownload, LogLine);
+                var files = github.ReadDirectory("Help");
+                if (files != null)        // may be empty, unlikely, but
+                {
+                    if (github.DownloadFiles(files, helpdir))
+                    {
+                        if (!cancelRequested())
+                        {
+                            InvokeAsyncOnUiThread(() => { OnHelpDownloaded?.Invoke(); });
                         }
                     }
                 }

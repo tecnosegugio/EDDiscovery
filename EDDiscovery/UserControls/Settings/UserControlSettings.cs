@@ -13,16 +13,14 @@
  * 
  * EDDiscovery is not affiliated with Frontier Developments plc.
  */
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using System.IO;
 using EDDiscovery.Forms;
 using EliteDangerousCore;
 using EliteDangerousCore.DB;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace EDDiscovery.UserControls
 {
@@ -94,8 +92,8 @@ namespace EDDiscovery.UserControls
             checkBoxCustomEnableScreenshots.Checked = discoveryform.screenshotconverter.AutoConvert;
             this.checkBoxCustomEnableScreenshots.CheckedChanged += new System.EventHandler(this.checkBoxCustomEnableScreenshots_CheckedChanged);
 
-            checkBoxCustomEDSMEDDBDownload.Checked = EDDConfig.Instance.EDSMEDDBDownload;
-            this.checkBoxCustomEDSMEDDBDownload.CheckedChanged += new System.EventHandler(this.checkBoxCustomEDSMDownload_CheckedChanged);
+            checkBoxCustomEDSMDownload.Checked = EDDConfig.Instance.EDSMDownload;
+            this.checkBoxCustomEDSMDownload.CheckedChanged += new System.EventHandler(this.checkBoxCustomEDSMDownload_CheckedChanged);
 
             comboBoxCustomHistoryLoadTime.Items = new string[] { "Disabled-Load All".T(EDTx.UserControlSettings_DLA), ">7 days old".T(EDTx.UserControlSettings_7daysold),
                 ">30 days old".T(EDTx.UserControlSettings_30daysold), ">60 days old".T(EDTx.UserControlSettings_60daysold), ">90 days old".T(EDTx.UserControlSettings_90daysold),
@@ -465,14 +463,14 @@ namespace EDDiscovery.UserControls
 
         #endregion
 
-        #region EDDB EDSM
+        #region EDSM
 
         private void checkBoxCustomEDSMDownload_CheckedChanged(object sender, EventArgs e)
         {
-            EDDConfig.Instance.EDSMEDDBDownload = checkBoxCustomEDSMEDDBDownload.Checked;
+            EDDConfig.Instance.EDSMDownload = checkBoxCustomEDSMDownload.Checked;
 
 
-            if ( EDDConfig.Instance.EDSMEDDBDownload == true)   // if turned on
+            if ( EDDConfig.Instance.EDSMDownload == true)   // if turned on
             {
                 int gridsel = 0;
                 bool[] grids = new bool[GridId.MaxGridID];
@@ -501,7 +499,7 @@ namespace EDDiscovery.UserControls
 
                 if (gss.Action == GalaxySectorSelect.ActionToDo.Add)
                 {
-                    discoveryform.ForceEDSMEDDBFullRefresh();
+                    discoveryform.ForceEDSMFullRefresh();
                 }
                 else if (gss.Action == GalaxySectorSelect.ActionToDo.Remove)
                 {
@@ -622,7 +620,7 @@ namespace EDDiscovery.UserControls
                                  "-Protocol TCP;" +
                                  "netsh http add urlacl " +
                                 $"url = http://*:{EDDConfig.Instance.WebServerPort.ToStringInvariant()}/ " +
-                                $"user=\"{Environment.GetEnvironmentVariable("USERNAME")}\"";
+                                $"user=\"{Environment.GetEnvironmentVariable("USERDOMAIN")}\\{Environment.GetEnvironmentVariable("USERNAME")}\"";
 
                     int pid = process.StartProcess("Powershell.exe", cmd, "runas");
 

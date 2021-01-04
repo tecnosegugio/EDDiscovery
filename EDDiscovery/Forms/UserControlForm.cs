@@ -63,6 +63,9 @@ namespace EDDiscovery.Forms
 
             timer.Interval = 500;
             timer.Tick += CheckMouse;
+
+            extButtonDrawnHelp.Image = ExtendedControls.TabStrip.HelpIcon;
+            extButtonDrawnHelp.Text = "";
         }
 
         #region Public Interface
@@ -205,7 +208,7 @@ namespace EDDiscovery.Forms
             this.BackColor = togo;
             statusStripBottom.BackColor = togo;
             panel_taskbaricon.BackColor = panel_transparent.BackColor = panel_close.BackColor =
-                    panel_minimize.BackColor = panel_ontop.BackColor = panel_showtitle.BackColor = panelTop.BackColor = togo;
+                    panel_minimize.BackColor = panel_ontop.BackColor = panel_showtitle.BackColor = extButtonDrawnHelp.BackColor = panelTop.BackColor = togo;
 
             label_index.ForeColor = labelControlText.ForeColor = showtransparent ? labeltransparentcolour : labelnormalcolour;
 
@@ -233,9 +236,10 @@ namespace EDDiscovery.Forms
 
             statusStripBottom.Visible = !transparent && !curwindowsborder;      // status strip on, when not transparent, and when we don't have border
 
-            panel_taskbaricon.Visible = panel_close.Visible = panel_minimize.Visible = panel_ontop.Visible = panel_showtitle.Visible = !transparent;
+            panel_taskbaricon.Visible = panel_close.Visible = panel_minimize.Visible = panel_ontop.Visible = panel_showtitle.Visible = extButtonDrawnHelp.Visible = !transparent;
 
             panel_transparent.Visible = IsTransparencySupported && !transparent;
+            panel_showtitle.Visible = IsTransparencySupported && !transparent;
             panel_showtitle.Visible = IsTransparencySupported && !transparent;
 
             if (TransparentMode == TransparencyMode.On)
@@ -440,6 +444,10 @@ namespace EDDiscovery.Forms
             }
         }
 
+        private void extButtonDrawnHelp_Click(object sender, EventArgs e)
+        {
+            EDDHelp.Help(this, extButtonDrawnHelp.PointToScreen(new Point(0,extButtonDrawnHelp.Height)), UserControl);
+        }
 
         #endregion
 

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Version;Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" InitialTargets="Version" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -173,7 +173,14 @@
   <ItemGroup>
     <Compile Include="Actions\ActionControllerKeys.cs" />
     <Compile Include="Actions\ActionControllerVoice.cs" />
+    <Compile Include="EDDHelp.cs" />
     <Compile Include="Translations\EDDiscoveryTranslations.cs" />
+    <Compile Include="UserControls\CurrentState\UserControlFactions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\CurrentState\UserControlFactions.Designer.cs">
+      <DependentUpon>UserControlFactions.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\EngineeringSynthesis\UserControlMaterialTrader.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -187,6 +194,12 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UserControls\Helpers\CSVHelpers.cs" />
+    <Compile Include="UserControls\Helpers\MissionListUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\Helpers\MissionListUserControl.Designer.cs">
+      <DependentUpon>MissionListUserControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Overlays\UserControlMiningOverlay.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -579,11 +592,11 @@
     <Compile Include="UserControls\Helpers\DataGridViewStarResults.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UserControls\ScansStars\UserControlEDSM.cs">
+    <Compile Include="UserControls\ScansStars\UserControlWebBrowser.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserControls\ScansStars\UserControlEDSM.Designer.cs">
-      <DependentUpon>UserControlEDSM.cs</DependentUpon>
+    <Compile Include="UserControls\ScansStars\UserControlWebBrowser.Designer.cs">
+      <DependentUpon>UserControlWebBrowser.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\Search\SearchMaterialsCommodities.cs">
       <SubType>UserControl</SubType>
@@ -726,8 +739,14 @@
     <EmbeddedResource Include="Forms\UserControlForm.resx">
       <DependentUpon>UserControlForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\CurrentState\UserControlFactions.resx">
+      <DependentUpon>UserControlFactions.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\EngineeringSynthesis\UserControlMaterialTrader.resx">
       <DependentUpon>UserControlMaterialTrader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\Helpers\MissionListUserControl.resx">
+      <DependentUpon>MissionListUserControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\Helpers\TagsForm.resx">
       <DependentUpon>TagsForm.cs</DependentUpon>
@@ -831,8 +850,8 @@
     <EmbeddedResource Include="UserControls\LogsBookmarks\UserControlBookmarks.resx">
       <DependentUpon>UserControlBookmarks.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\ScansStars\UserControlEDSM.resx">
-      <DependentUpon>UserControlEDSM.cs</DependentUpon>
+    <EmbeddedResource Include="UserControls\ScansStars\UserControlWebBrowser.resx">
+      <DependentUpon>UserControlWebBrowser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\Search\SearchMaterialsCommodities.resx">
       <DependentUpon>SearchMaterialsCommodities.cs</DependentUpon>
@@ -957,6 +976,7 @@
     <None Include="Translations\chinese-zh.tlf" />
     <None Include="Translations\deutsch-de.tlf" />
     <None Include="Translations\example-ex.tlf" />
+    <None Include="Translations\francais-fr.tlf" />
     <None Include="Translations\Italiano-it.tlf" />
     <None Include="Translations\polski-pl.tlf" />
     <None Include="Translations\portugues-pt-br.tlf" />
