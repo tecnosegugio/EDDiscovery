@@ -139,14 +139,17 @@ namespace EDDiscovery.UserControls
         {
             System.Diagnostics.Debug.Assert(Application.MessageLoop);       // check!
 
+            //System.Diagnostics.Debug.WriteLine(BaseUtils.AppTicks.TickCountLapDelta("SD1", true) + "SD main thread");
+
             double lookup_max = Math.Min(textMaxRadius.Value, lookup_limit);
 
             // Get nearby systems from our travel history. This will filter out duplicates from the systems DB.
             discoveryform.history.CalculateSqDistances(list, sys.X, sys.Y, sys.Z,
-                                maxitems, textMinRadius.Value, lookup_max, !checkBoxCube.Checked
-                                );
+                                maxitems, textMinRadius.Value, lookup_max, !checkBoxCube.Checked, 5000);       // only go back a sensible number of FSD entries
 
             FillGrid(sys.Name, list);
+
+            //System.Diagnostics.Debug.WriteLine(BaseUtils.AppTicks.TickCountLapDelta("SD1") + "SD  finish");
         }
 
         private void FillGrid(string name, BaseUtils.SortedListDoubleDuplicate<ISystem> csl)
@@ -154,11 +157,14 @@ namespace EDDiscovery.UserControls
             DataGridViewColumn sortcolprev = dataGridViewNearest.SortedColumn != null ? dataGridViewNearest.SortedColumn : dataGridViewNearest.Columns[1];
             SortOrder sortorderprev = dataGridViewNearest.SortedColumn != null ? dataGridViewNearest.SortOrder : SortOrder.Ascending;
 
+            dataViewScrollerPanel.Suspend();
             dataGridViewNearest.Rows.Clear();
 
             if (csl != null && csl.Any())
             {
                 SetControlText(string.Format("From {0}".T(EDTx.UserControlStarDistance_From), name));
+
+                List<DataGridViewRow> rows = new List<DataGridViewRow>();
 
                 int maxdist = 0;
                 foreach (KeyValuePair<double, ISystem> tvp in csl)
@@ -172,10 +178,14 @@ namespace EDDiscovery.UserControls
                         int visits = discoveryform.history.GetVisitsCount(tvp.Value.Name);
                         object[] rowobj = { tvp.Value.Name, $"{dist:0.00}", $"{visits:n0}" };
 
-                        int rowindex = dataGridViewNearest.Rows.Add(rowobj);
-                        dataGridViewNearest.Rows[rowindex].Tag = tvp.Value;
+                        var rw = dataGridViewNearest.RowTemplate.Clone() as DataGridViewRow;
+                        rw.CreateCells(dataGridViewNearest, rowobj);
+                        rw.Tag = tvp.Value; 
+                        rows.Add(rw);
                     }
                 }
+
+                dataGridViewNearest.Rows.AddRange(rows.ToArray());
 
                 if (csl.Count > maxitems / 2)           // if we filled up at least half the list, we limit to max distance plus
                 {
@@ -193,16 +203,17 @@ namespace EDDiscovery.UserControls
                 SetControlText(string.Empty);
             }
 
-            dataGridViewNearest.Sort(sortcolprev, (sortorderprev == SortOrder.Descending) ? ListSortDirection.Descending : ListSortDirection.Ascending);
-            dataGridViewNearest.Columns[sortcolprev.Index].HeaderCell.SortGlyphDirection = sortorderprev;
-        }
+            if ( sortcolprev != colDistance || sortorderprev != SortOrder.Ascending )   // speed optimising, only sort if not in sort order from distances
+                dataGridViewNearest.Sort(sortcolprev, (sortorderprev == SortOrder.Descending) ? ListSortDirection.Descending : ListSortDirection.Ascending);
 
-        private int rightclickrow = -1;
+            dataGridViewNearest.Columns[sortcolprev.Index].HeaderCell.SortGlyphDirection = sortorderprev;
+
+            dataViewScrollerPanel.Resume();
+        }
 
         private void dataGridViewNearest_MouseDown(object sender, MouseEventArgs e)
         {
-            dataGridViewNearest.HandleClickOnDataGrid(e, out int unusedleftclickrow, out rightclickrow);
-            viewOnEDSMToolStripMenuItem1.Enabled = rightclickrow != -1;
+            viewOnEDSMToolStripMenuItem1.Enabled = dataGridViewNearest.RightClickRowValid;
         }
 
         private void addToTrilaterationToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -238,9 +249,9 @@ namespace EDDiscovery.UserControls
 
         private void viewOnEDSMToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (rightclickrow >= 0 && rightclickrow < dataGridViewNearest.Rows.Count)
+            if (dataGridViewNearest.RightClickRowValid) 
             {
-                var rightclicksystem = (ISystem)dataGridViewNearest.Rows[rightclickrow].Tag;
+                var rightclicksystem = (ISystem)dataGridViewNearest.Rows[dataGridViewNearest.RightClickRow].Tag;
 
                 if (rightclicksystem != null)
                 {
@@ -296,9 +307,10 @@ namespace EDDiscovery.UserControls
 
         private void viewSystemToolStripMenuItem_Click(object sender, EventArgs e)
         {
-                if (rightclickrow >= 0 && rightclickrow < dataGridViewNearest.Rows.Count)
-                {
-                    var rightclicksystem = (ISystem)dataGridViewNearest.Rows[rightclickrow].Tag;
+            if (dataGridViewNearest.RightClickRowValid)
+            {
+                var rightclicksystem = (ISystem)dataGridViewNearest.Rows[dataGridViewNearest.RightClickRow].Tag;
+
                 if ( rightclicksystem != null )
                     ScanDisplayForm.ShowScanOrMarketForm(this.FindForm(), rightclicksystem, true, discoveryform.history);
             }

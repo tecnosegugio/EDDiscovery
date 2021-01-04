@@ -67,6 +67,7 @@ namespace EDDiscovery
         EDDiscoveryForm_VSLFileErr, // Error writing {0} export visited stars
         EDDiscoveryForm_InaraW, // Inara historic upload is disabled until 1 hour has elapsed from the last try to prevent server flooding
         EDDiscoveryForm_IndexW, // Are you sure to Rebuild Indexes? It may take a long time.
+        EDDiscoveryForm_FillPos, // Are you sure to Rebuild Indexes? It may take a long time.
         EDDiscoveryForm_RemoveDLLPerms, // remove dll etc.
         EDDiscoveryForm_RH, // Refresh History.
         EDDiscoveryForm_NoEDSMAPI, // Please ensure a commander is selected and it has a EDSM API key set
@@ -79,7 +80,6 @@ namespace EDDiscovery
         EDDiscoveryForm_WSD, // *** Web server is disabled ***
         EDDiscoveryForm_CloseWarning, // EDDiscovery is updating the EDSM and EDDB databases
         EDDiscoveryForm_SafeMode, // To start in safe mode, exit the program, hold down the shift key
-        EDDiscoveryForm_ResetEDSMID, // Confirm you wish to reset the assigned EDSM ID
 
         EDDiscoveryController_CD, // Closing down, please wait..
         EDDiscoveryController_EDSM, // Get galactic mapping from EDSM.
@@ -614,8 +614,8 @@ namespace EDDiscovery
         UserControlRoute_Confirm, // This will result in a large number ({0})) of jumps
         UserControlRoute_NoRoute, // No route set up, retry
 
-        UserControlEDSM_EnterSys, // Show System
-        UserControlEDSM_System, // System:
+        UserControlWebBrowser_EnterSys, // Show System
+        UserControlWebBrowser_System, // System:
 
         UserControlEstimatedValues_SV, // Estimated Scan Values for {0}
 
@@ -795,6 +795,7 @@ namespace EDDiscovery
         FilterSelector_Commodities, // Commodities
         FilterSelector_Ledger, // Ledger
         FilterSelector_Ship, // Ship
+        FilterSelector_Mining, // Mining
 
         ScreenshotDirectoryWatcher_Scan, // Scanning for {0} screenshots in {1}
         ScreenshotDirectoryWatcher_NOF, // Folder specified for image conversion does not exist, check settings in the Screenshots tab
@@ -825,6 +826,30 @@ namespace EDDiscovery
         UserControlMaterialTrader_Offer, // Offer
         UserControlMaterialTrader_Receive, // Receive
 
+        UserControlFactions_CapShipVictims, // Capital ship Victims: 
+        UserControlFactions_CapShipAward, //  Capital ship Award: 
+        UserControlFactions_FactionsPlural, // Factions
+        UserControlFactions_MissionsFor, // Missions for
+
+        UserControlFactions_Item, // Item
+        UserControlFactions_MaterialCommodsFor, // Materials/Commodities for
+
+        UserControlFactions_BountyBond, // Bounty/Bond
+        UserControlFactions_Target, // Target
+        UserControlFactions_TargetFaction, // Target Faction
+        UserControlFactions_Reward, // Reward
+        UserControlFactions_BountiesBondsFor, // Bounties/Bonds for
+
+        UserControlFactions_SystemAddress, // System Address
+        UserControlFactions_colInfluence,   // +Influence
+        UserControlFactions_CBought,        // Commds +
+        UserControlFactions_CSold,  // Commds -
+        UserControlFactions_MBought, // Mats +
+        UserControlFactions_MSold,  // Mats-
+        UserControlFactions_RewardsPlural, // Rewards
+        UserControlFactions_BountiesPlural, // Bounties
+        UserControlFactions_BondsPlural, // Bonds
+        UserControlFactions_SystemsDetailFor, // Systems Detail for
     }
 
     public static class EDTranslatorExtensions

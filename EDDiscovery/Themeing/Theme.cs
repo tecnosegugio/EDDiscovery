@@ -122,6 +122,7 @@ namespace EDDiscovery
 
                         set.name = fi.Name.Replace(".eddtheme", "");
                         set.colors = new Dictionary<Settings.CI, Color>();
+                        System.Diagnostics.Debug.WriteLine("Loading Theme : " + set.name);
 
                         foreach (Settings.CI ck in Enum.GetValues(typeof(Settings.CI)))           // all enums
                         {
@@ -135,16 +136,41 @@ namespace EDDiscovery
                                     Color c = System.Drawing.ColorTranslator.FromHtml(s);   // may except if not valid HTML colour
                                     set.colors.Add(ck, c);
                                     done = true;
+                                    System.Diagnostics.Debug.WriteLine("Color.FromArgb({0},{1},{2},{3}), // {4}", c.A, c.R, c.G, c.B, ck.ToString());
                                 }
                             }
                             catch
                             {
-                                System.Diagnostics.Debug.WriteLine("Theme has invalid colour ");
+                                System.Diagnostics.Debug.WriteLine("Theme has invalid colour");
                             }
-                            if (!done)
+
+                            try
                             {
-                                Color def = themelist[0].colors[ck];        // 
-                                set.colors.Add(ck, def);
+                                if (!done)
+                                {
+                                    string gridtext = jo[Settings.CI.grid_celltext.ToString()].StrNull();
+                                    string gridback = jo[Settings.CI.grid_cellbackground.ToString()].StrNull();
+
+                                    if (ck == Settings.CI.grid_altcelltext && gridtext != null)
+                                    {
+                                        Color c = System.Drawing.ColorTranslator.FromHtml(gridtext);   // may except if not valid HTML colour
+                                        set.colors.Add(ck, c);
+                                    }
+                                    else if (ck == Settings.CI.grid_altcellbackground && gridback != null)
+                                    {
+                                        Color c = System.Drawing.ColorTranslator.FromHtml(gridback);   // may except if not valid HTML colour
+                                        set.colors.Add(ck, c);
+                                    }
+                                    else
+                                    {
+                                        Color def = themelist[0].colors[ck];        // 
+                                        set.colors.Add(ck, def);
+                                    }
+                                }
+                            }
+                            catch
+                            {
+                                System.Diagnostics.Debug.WriteLine("Theme has invalid colour");
                             }
                         }
 
@@ -154,6 +180,9 @@ namespace EDDiscovery
                         set.fontsize = jo["fontsize"].Float(themelist[0].fontsize);
                         set.buttonstyle = jo["buttonstyle"].Str(themelist[0].buttonstyle);
                         set.textboxborderstyle = jo["textboxborderstyle"].Str(themelist[0].textboxborderstyle);
+
+                        System.Diagnostics.Debug.WriteLine("{0},{1},{2},{3})", set.windowsframe, set.formopacity, set.fontname, set.fontsize);
+
                         themelist.Add(set);
                     }
                 }
